@@ -156,3 +156,17 @@ of initialization, add the following function signature to `main.py`:
 def init(cursor, **options):
   # Implementation goes here.
 ```
+
+## Development
+
+```
+python -m venv ~/.venv/reaper
+source ~/.venv/reaper/bin/activate
+pip install -r requirements.txt
+```
+
+## Tests
+
+```
+python -m unittest
+```
