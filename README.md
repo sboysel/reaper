@@ -165,7 +165,13 @@ source ~/.venv/reaper/bin/activate
 pip install -r requirements.txt
 ```
 
-## Tests
+Setup persist table
+
+```
+psql -h $GHTORRENT_HOST -U ghtorrentuser -d ghtorrent -a -f persist_table.sql
+```
+
+Tests
 
 ```
 python -m unittest
