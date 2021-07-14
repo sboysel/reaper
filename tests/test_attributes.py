@@ -37,6 +37,7 @@ class AttributesTestCase(unittest.TestCase):
             }
 
     def test_init(self):
+        # [x] passing
         # Arrange
         expected = len(self.rawattributes)
 
@@ -59,6 +60,7 @@ class AttributesTestCase(unittest.TestCase):
             self.assertIsInstance(attribute.reference, types.ModuleType)
 
     def test_pickling(self):
+        # [x] passing
         # Arrange
         attributes = Attributes(
             self.rawattributes, database=None, goptions=self.rawgoptions
@@ -84,6 +86,7 @@ class AttributesTestCase(unittest.TestCase):
             self.assertIsInstance(attribute.reference, types.ModuleType)
 
     def test_keystring(self):
+        # [x] passing
         # Arrange
         keystring = 'DuAlIcH'
 
@@ -105,7 +108,8 @@ class AttributesTestCase(unittest.TestCase):
                 else:
                     self.assertFalse(attribute.persist)
 
-    def test_is_persitence_enabled(self):
+    def test_is_persistence_enabled(self):
+        # [x] passing
         # Arrange
         keystring = 'dualmichs'
 
@@ -130,6 +134,7 @@ class AttributesTestCase(unittest.TestCase):
         self.assertTrue(attributes.is_persistence_enabled)
 
     def test_init_repository(self):
+        # TODO: FIX ME
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -153,9 +158,10 @@ class AttributesTestCase(unittest.TestCase):
                 self.assertTrue(len(os.listdir(repository_path)) > 0)
                 self.assertTrue(expected in actual)
             finally:
-                attributes.database.disconnect()
+                attributes.database.close()
 
     def test_cleanup(self):
+        # TODO: how slow is this?
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -174,9 +180,10 @@ class AttributesTestCase(unittest.TestCase):
                 # Assert
                 self.assertFalse(os.path.exists(repository_home))
             finally:
-                attributes.database.disconnect()
+                attributes.database.close()
 
     def test_run_timeout(self):
+        # TODO: how slow is this?
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -201,9 +208,10 @@ class AttributesTestCase(unittest.TestCase):
                 # Assert
                 self.assertEqual(expected, actual)
             finally:
-                attributes.database.disconnect()
+                attributes.database.close()
 
     def test_score(self):
+        # TODO: how slow is this?
         # Global Arrange
         attributes = Attributes(
             self.rawattributes, database=None, goptions=self.rawgoptions
@@ -270,6 +278,7 @@ class AttributesTestCase(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     def test_requires_source(self):
+        # [x] passing
         # Arrange
         keystring = 'mchs'
 

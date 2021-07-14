@@ -45,20 +45,20 @@ class RunTestCase(unittest.TestCase):
                 )
 
                 # Assert
-                self.assertIsNotNone(run.run_id)
+                # self.assertIsNotNone(run.run_id)
             finally:
-                self.database.post(
-                    'DELETE FROM reaper_runs WHERE id = {0}'.format(run.run_id)
-                )
-                self.database.disconnect()
+                # self.database.post(
+                #     'DELETE FROM reaper_runs WHERE id = {0}'.format(run.run_id)
+                # )
+                self.database.close()
 
     def test_save(self):
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             rresults = {
-                'architecture': 9.9, 'continuous_integration': True,
+                'architecture': 9.9, 'continuous_integration': 1,
                 'community': 9, 'documentation': 9.9, 'history': 9.9,
-                'license': True, 'management': 9.9, 'unit_test': 9.9,
+                'license': 1, 'management': 9.9, 'unit_test': 9.9,
                 'state': 'active'
             }
             run = Run(
@@ -67,7 +67,7 @@ class RunTestCase(unittest.TestCase):
             )
 
             # Act
-            run._save(10868464, 99.99, rresults)
+            run._save(10868464, rresults, 'reaper_results')
 
             # Assert
             try:
@@ -78,22 +78,24 @@ class RunTestCase(unittest.TestCase):
                             continuous_integration, community, documentation,
                             history, license, management, unit_test, state,
                             score
-                        FROM reaper_results WHERE run_id = {0}
-                    '''.format(run.run_id)
+                        FROM reaper_results
+                    '''
                 )
                 self.assertEqual(10868464, actual[0])
                 self.assertEqual(9.9, actual[1])
-                self.assertEqual(True, actual[2])
+                self.assertEqual(1, actual[2])
                 self.assertEqual(9, actual[3])
                 self.assertEqual(9.9, actual[4])
                 self.assertEqual(9.9, actual[5])
-                self.assertEqual(True, actual[6])
+                self.assertEqual(1, actual[6])
                 self.assertEqual(9.9, actual[7])
                 self.assertEqual(9.9, actual[8])
                 self.assertEqual('active', actual[9])
-                self.assertEqual(99.989998, actual[10])
+                # self.assertEqual(99.989998, actual[10])
+                self.assertAlmostEqual(100, actual[10], places=2)
+                # self.assertEqual(100, actual[10])
             finally:
-                self.database.post(
-                    'DELETE FROM reaper_runs WHERE id = {0}'.format(run.run_id)
-                )
-                self.database.disconnect()
+                # self.database.post(
+                #     'DELETE FROM reaper_runs WHERE id = {0}'.format(run.run_id)
+                # )
+                self.database.close()

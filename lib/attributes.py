@@ -132,7 +132,7 @@ class Attributes(object):
             extype, exvalue, extrace = sys.exc_info()
             traceback.print_exception(extype, exvalue, extrace)
         finally:
-            self.database.disconnect()
+            self.database.close()
             if self.cleanup:
                 self._cleanup(repository_home)
             return rresults

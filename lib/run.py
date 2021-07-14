@@ -104,7 +104,7 @@ class Run(object):
                 self.database.connect()
                 self.database.post(query, values)
             finally:
-                self.database.disconnect()
+                self.database.close()
         else:
             if 'DEBUG' in os.environ:
                 for (attribute, result) in rresults.items():
@@ -131,7 +131,7 @@ class Run(object):
                 for (index, column) in enumerate(columns):
                     rresults[column] = output[index]
         finally:
-            self.database.disconnect()
+            self.database.close()
 
         return rresults
 
