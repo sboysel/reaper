@@ -1,7 +1,7 @@
 import contextlib
 import sys
 
-import mysql.connector as mysql
+import psycopg2
 
 
 class DatabaseError(Exception):
@@ -15,22 +15,22 @@ class DatabaseError(Exception):
 class Database(object):
     def __init__(self, settings):
         self.settings = settings
-        self.settings['autocommit'] = True
         self._connection = None
 
     def connect(self):
         try:
-            self._connection = mysql.connect(**self.settings)
-        except mysql.Error as e:
+            self._connection = psycopg2.connect(**self.settings)
+            self._connection.autocommit = True
+        except psycopg2.Error as e:
             msg = 'Failure in connecting to database. Error: {0}'.format(e)
             raise DatabaseError(msg)
 
-    def disconnect(self):
+    def close(self):
         try:
             if self._connection:
-                self._connection.disconnect()
+                self._connection.close()
             self._connection = None
-        except mysql.Error as e:
+        except psycopg2.Error as e:
             msg = 'Failure in disconnecting from database. Error: {0}'.format(
                 e
             )
@@ -52,25 +52,25 @@ class Database(object):
                             rows = rows[0]
 
             return rows
-        except mysql.Error as e:
+        except psycopg2.Error as e:
             msg = 'Failure in executing query {0}. Error: {1}'.format(query, e)
             raise DatabaseError(msg)
 
     def post(self, query, data=None):
         try:
             with self.cursor() as cursor:
-                cursor.execute(query, params=data)
+                cursor.execute(query, vars=data)
 
                 if cursor.lastrowid is not None:
                     return cursor.lastrowid
                 return cursor.rowcount
-        except mysql.Error as e:
+        except psycopg2.Error as e:
             msg = 'Failure in executing query {0}. Error: {1}'.format(query, e)
             raise DatabaseError(msg)
 
     @contextlib.contextmanager
     def cursor(self):
-        if not self._connected:
+        if self._connection.closed:
             msg = 'An active database connection is needed to create a cursor.'
             raise DatabaseError(msg)
 
@@ -85,14 +85,14 @@ class Database(object):
     @property
     def _connected(self):
         connected = False
-        if self._connection is not None and self._connection.is_connected():
+        if self._connection is not None and not self._connection.closed:
             connected = True
         return connected
 
     def __getstate__(self):
         state = self.__dict__.copy()
-        if isinstance(self._connection, mysql.connection.MySQLConnection):
-            self.disconnect()
+        if isinstance(self._connection, psycopg2.extensions.connection):
+            self.close()
             state['_connection'] = ''
         return state
 

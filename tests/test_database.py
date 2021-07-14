@@ -3,7 +3,7 @@ import os
 import pickle
 import unittest
 
-import mysql.connector as mysql
+import psycopg2
 from lib import database
 
 
@@ -37,7 +37,7 @@ class DatabaseTestCase(unittest.TestCase):
         # Assert
         self.assertIsInstance(unpickled, database.Database)
         self.assertIsInstance(
-            unpickled._connection, mysql.connection.MySQLConnection
+            unpickled._connection, psycopg2.extensions.connection
         )
         self.assertTrue(unpickled._connected)
 
@@ -48,17 +48,17 @@ class DatabaseTestCase(unittest.TestCase):
         # Assert
         self.assertTrue(self.database._connected)
 
-    def test_disconnect(self):
+    def test_close(self):
         # Act
         self.database.connect()
-        self.database.disconnect()
+        self.database.close()
 
         # Assert
         self.assertFalse(self.database._connected)
 
     def test_get_empty(self):
         # Arrange
-        query = 'SELECT id, name FROM projects WHERE id = 111111111'
+        query = 'SELECT id, name FROM projects WHERE id = 000000000'
 
         # Act
         self.database.connect()
@@ -94,21 +94,21 @@ class DatabaseTestCase(unittest.TestCase):
     def test_post(self):
         # Arrange
         tname = 'foo'
-        query = 'CREATE TABLE {0} (bar INT)'.format(tname)
+        query = 'CREATE TABLE IF NOT EXISTS {0} (bar INT)'.format(tname)
         expected = tname
 
         # Act
         self.database.connect()
         self.database.post(query)
-        actual = self.database.get('SHOW TABLES LIKE \'{0}\''.format(tname))
-
+        actual = self.database.get('SELECT \'{0}\' FROM information_schema.tables \
+                                   WHERE table_schema = \'public\''.format(tname))
         # Assert
         try:
-            self.assertCountEqual(expected, actual)
+            self.assertCountEqual(expected, actual[0][0])
         finally:
             with self.database.cursor() as cursor:
                 cursor.execute('DROP TABLE IF EXISTS {0}'.format(tname))
 
     def tearDown(self):
         if self.database:
-            self.database.disconnect()
+            self.database.close()
