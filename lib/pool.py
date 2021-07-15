@@ -13,4 +13,19 @@ class NonDaemonicProcess(multiprocessing.Process):
 
 
 class NonDaemonicProcessPool(multiprocessing.pool.Pool):
-    Process = NonDaemonicProcess
+    # Process = NonDaemonicProcess
+    def Process(self, *args, **kwds):
+        proc = super(NonDaemonicProcessPool, self).Process(*args, **kwds)
+
+        class NonDaemonProcess(proc.__class__):
+            """Monkey-patch process to ensure it is never daemonized"""
+            @property
+            def daemon(self):
+                return False
+
+            @daemon.setter
+            def daemon(self, val):
+                pass
+
+        proc.__class__ = NonDaemonicProcess
+        return proc
