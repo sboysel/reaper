@@ -72,3 +72,5 @@ target/
 **/scratch.*
 **/workspace.*
 **/temp.*
+sample_file
+.vscode/

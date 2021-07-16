@@ -160,6 +160,7 @@ def init(cursor, **options):
 ## Development
 
 ```
+yay -S ack cloc
 python -m venv ~/.venv/reaper
 source ~/.venv/reaper/bin/activate
 pip install -r requirements.txt
@@ -175,4 +176,12 @@ Tests
 
 ```
 python -m unittest
+```
+
+Test run
+
+```
+echo "10868464" >> sample_file
+mkdir -p /tmp/reaper_runs
+python batch_score.py -c config.json -r /tmp/reaper_runs -m manifest.json -s sample_file
 ```
