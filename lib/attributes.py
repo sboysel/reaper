@@ -76,7 +76,7 @@ class Attributes(object):
                     with self.database.cursor() as cursor:
                         attribute.reference.global_init(cursor, samples)
         finally:
-            self.database.disconnect()
+            self.database.close()
 
     def run(self, project_id, repository_root):
         rresults = dict()
@@ -206,19 +206,20 @@ class Attributes(object):
             if not (repo_owner or repo_name):
                 raise ValueError('Invalid project ID {0}.'.format(project_id))
 
-            last_commit_date = self.database.get(
-                '''
-                    SELECT DATE(c.created_at)
-                    FROM project_commits pc
-                        JOIN commits c ON c.id = pc.commit_id
-                    WHERE pc.project_id = {0}
-                    ORDER BY c.created_at DESC
-                    LIMIT 1
-                '''.format(project_id)
-            )
+            # last_commit_date = self.database.get(
+            #     '''
+            #         SELECT DATE(c.created_at)
+            #         FROM project_commits pc
+            #             JOIN commits c ON c.id = pc.commit_id
+            #         WHERE pc.project_id = {0}
+            #         ORDER BY c.created_at DESC
+            #         LIMIT 1
+            #     '''.format(project_id)
+            # )
 
-            if last_commit_date is None:
-                last_commit_date = self.today
+            # if last_commit_date is None:
+            #     last_commit_date = self.today
+            last_commit_date = self.today
 
             repository_path = utilities.clone(
                 repo_owner, repo_name, repository_path, last_commit_date
