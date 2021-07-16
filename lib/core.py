@@ -47,10 +47,9 @@ class Tokenizer():
 
             token = self.available_tokens.get(block=True)
 
-            rate_limit_url = (
-                'https://api.github.com/rate_limit?access_token={0}'
-            ).format(token)
-            status = url_to_json(rate_limit_url)
+            rate_limit_url = 'https://api.github.com/rate_limit'
+            headers = {'Authorization': 'token {0}'.format(token)}
+            status = url_to_json(rate_limit_url, headers=headers)
 
             # Throw away bad OAuth keys.
             if 'resources' not in status:

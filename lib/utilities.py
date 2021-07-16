@@ -420,9 +420,11 @@ def is_cloneable(owner, name):
 
     uri = '{0}/{1}'.format(owner, name)
     url = 'https://api.github.com/repos/{0}'.format(uri)
-    if TOKENIZER is not None:
-        url = TOKENIZER.tokenize(url)
-    request = urllib.request.Request(url, method='HEAD')
+    # if TOKENIZER is not None:
+    #     url = TOKENIZER.tokenize(url)
+    token = TOKENIZER.get_token()
+    headers = {'Authorization': 'token {0}'.format(token)}
+    request = urllib.request.Request(url, headers=headers, method='HEAD')
 
     try:
         urllib.request.urlopen(request)
