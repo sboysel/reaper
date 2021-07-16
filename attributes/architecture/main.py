@@ -185,7 +185,7 @@ class Node():
 if __name__ == '__main__':
     import importlib
     import json
-    import mysql.connector
+    import psycopg2
     import sys
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
     from lib.utilities import get_loc
@@ -195,9 +195,9 @@ if __name__ == '__main__':
     with open('../../config.json', 'r') as file:
         config = json.load(file)
 
-    mysql_config = config['options']['datasource']
+    postgres_config = config['options']['datasource']
 
-    connection = mysql.connector.connect(**mysql_config)
+    connection = psycopg2.connect(**postgres_config)
     connection.connect()
 
     cursor = connection.cursor()
