@@ -31,11 +31,11 @@ class Tokenizer():
             if self.have_tokens:
                 token = self.get_token()
                 if token is not None:
-                    return '{0}?access_token={1}'.format(url, token)
+                    return token
                 else:
-                    return url
+                    raise ValueError('token is None')
             else:
-                return url
+                raise ValueError('No tokens')
         else:
             raise ValueError('url must be for the GitHub API')
 
