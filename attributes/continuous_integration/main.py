@@ -8,6 +8,7 @@ ci_discoverer = CiDiscoverer()
 
 def run(project_id, repo_path, cursor, **options):
     result = ci_discoverer.discover(repo_path)
+    print('{0} - CI: {1}'.format(project_id, result))
     return (int(result), result)
 
 

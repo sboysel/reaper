@@ -38,6 +38,7 @@ def run(project_id, repo_path, cursor, **options):
             break
 
     threshold = options['threshold']
+    print('{0} - Number of core contributors: {1}'.format(project_id, num_core_contributors))
     return (num_core_contributors >= threshold, num_core_contributors)
 
 

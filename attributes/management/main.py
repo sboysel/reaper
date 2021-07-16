@@ -43,6 +43,7 @@ def run(project_id, repo_path, cursor, **options):
         return False, avg_issues
 
     threshold = options['threshold']
+    print('{0} - Management: {1}'.format(project_id, avg_issues))
     return avg_issues >= threshold, avg_issues
 
 if __name__ == '__main__':

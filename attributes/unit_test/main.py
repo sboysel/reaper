@@ -13,6 +13,7 @@ def run(project_id, repo_path, cursor, **options):
 
     threshold = options['threshold']
 
+    print('{0} - Unit test: {1}'.format(project_id, proportion))
     return (proportion >= threshold), proportion
 
 if __name__ == '__main__':

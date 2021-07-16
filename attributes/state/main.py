@@ -33,6 +33,7 @@ def run(project_id, repo_path, cursor, **options):
         if bresult:
             rresult = 'active'
 
+    print('{0} - State: {1}'.format(project_id, rresult))
     return bresult, rresult
 
 if __name__ == '__main__':

@@ -98,6 +98,7 @@ def run(project_id, repo_path, cursor, **options):
     build_graph(file_paths, graph, lexer)
 
     result = get_connectedness(graph)
+    print('{0} - Architecture: {1}'.format(project_id, result))
     return result >= options['threshold'], result
 
 

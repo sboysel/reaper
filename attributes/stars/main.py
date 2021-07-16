@@ -18,6 +18,7 @@ def run(project_id, repo_path, cursor, **options):
     )
     bresult = True if rresult is not None and rresult >= threshold else False
 
+    print('{0} - Stars: {1}'.format(project_id, rresult))
     return bresult, rresult
 
 if __name__ == '__main__':

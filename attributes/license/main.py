@@ -48,6 +48,7 @@ def run(project_id, repo_path, cursor, **options):
                 result = True
                 break
 
+    print('{0} - License: {1}'.format(project_id, result))
     return result, result
 
 if __name__ == '__main__':
