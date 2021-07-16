@@ -4,8 +4,8 @@ import json
 import os
 import shlex
 import subprocess
-import urllib.request
 import re
+import requests
 import tarfile
 from tempfile import NamedTemporaryFile
 
@@ -218,16 +218,10 @@ def url_to_json(url, headers={}):
     Returns:
         dict: JSON of the response or empty dict on error.
     """
-    request = urllib.request.Request(
-        url,
-        headers=headers
-    )
-
     try:
-        response = urllib.request.urlopen(request)
-
-        raw_data = response.readall().decode('utf-8')
-        result = json.loads(raw_data)
+        response = requests.get(url, headers=headers)
+        response.encoding = 'utf-8'
+        result = response.json()
     except Exception as e:
         # TODO: Properly handle error. For now, just return empty dictionary.
         result = {}
@@ -425,18 +419,18 @@ def is_cloneable(owner, name):
     else:
         raise ValueError('TOKENIZER is None')
     headers = {'Authorization': 'token {0}'.format(token)}
-    request = urllib.request.Request(url, headers=headers, method='HEAD')
 
     try:
-        urllib.request.urlopen(request)
-    except urllib.error.HTTPError as error:
+        requests.get(url, headers=headers)
+    except requests.error.HTTPError as error:
         is_cloneable = False
-        if error.code == 404:
-            reason = '{0} is no longer active.'.format(uri)
-        elif error.code == 403:
-            reason = '{0} may have been deactivated.'.format(uri)
-        else:
-            reason = '{0} is not clone-able for reasons unknown.'.format(uri)
+        reason = repr(error)
+        # if error.code == 404:
+        #     reason = '{0} is no longer active.'.format(uri)
+        # elif error.code == 403:
+        #     reason = '{0} may have been deactivated.'.format(uri)
+        # else:
+        #     reason = '{0} is not clone-able for reasons unknown.'.format(uri)
 
     return (is_cloneable, reason)
 
