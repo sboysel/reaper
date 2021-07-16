@@ -79,6 +79,7 @@ class Run(object):
             if is_existing is True and updatable is False:
                 return
 
+            # TODO: for t in t0 ... T
             columns = ('project_id', 'score')
             values = (project_id, score)
             for key in rresults:

@@ -8,6 +8,7 @@ import tempfile
 import types
 import unittest
 
+from lib import core, utilities
 from lib.attributes import Attributes
 from lib.database import Database
 

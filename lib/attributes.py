@@ -93,6 +93,13 @@ class Attributes(object):
                 )
 
             for attribute in self.attributes:
+                # TODO: t0 = earliest_commit(project_id)
+                #       T = today
+                #       for t in t0 ... T
+                #           utilities.rollback(repository_path, t)
+                #           ...process attribute
+                #           return {t: result}
+                print('{0} - {1}'.format(project_id, attribute.name))
                 bresult = False
                 rresult = None
 

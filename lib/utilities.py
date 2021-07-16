@@ -1,18 +1,24 @@
 import argparse
+import datetime
 import io
 import json
 import os
+import pandas as pd
 import shlex
 import subprocess
 import re
 import requests
 import tarfile
+from git import Repo
 from tempfile import NamedTemporaryFile
 
 from lib import dateutil
 
 # GitHub OAuth token issuer
 TOKENIZER = None
+
+# Time index
+# {'': t}
 
 # Map GHTorrent's projects.language to ACK compatible language (if necessary).
 ACK_LANGUAGE_MAP = {
@@ -283,40 +289,15 @@ def clone(owner, name, directory, date=None):
     if process.returncode != 0:
         raise Exception('Failed to execute {0}'.format(command))
 
+    # TODO: make this into a function rollback(directory, name, date)
     if date is not None:
         # Reset
         path = os.path.join(path, name)
-        command = (
-            'git log -1 --before="{0} 23:59:59" --pretty="format:%H"'.format(
-                date
-            )
-        )
-        if 'DEBUG' in os.environ:
-            print(command)
-
-        process = subprocess.Popen(
-            command, cwd=path, shell=True,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        (out, err) = [i.decode() for i in process.communicate()]
-
-        if process.returncode != 0:
-            raise Exception('Failed to execute {0}'.format(command))
-
-        sha = out
-        command = 'git reset --hard {0}'.format(sha)
-        if 'DEBUG' in os.environ:
-            print(command)
-
-        process = subprocess.Popen(
-            command, cwd=path, shell=True,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
-        process.wait()
-        if process.returncode != 0:
-            raise Exception('Failed to execute {0}'.format(command))
+        rollback(path, date)
 
     return path
+
+
 
 
 def read(jsonfile):
@@ -409,7 +390,7 @@ def is_cloneable(owner, name):
         element is a string that describes the reason for a repository for not
         being clone-able.
     """
-    is_cloneable = True
+    cloneable = True
     reason = None
 
     uri = '{0}/{1}'.format(owner, name)
@@ -422,8 +403,8 @@ def is_cloneable(owner, name):
 
     try:
         requests.get(url, headers=headers)
-    except requests.error.HTTPError as error:
-        is_cloneable = False
+    except requests.exceptions.HTTPError as error:
+        cloneable = False
         reason = repr(error)
         # if error.code == 404:
         #     reason = '{0} is no longer active.'.format(uri)
@@ -432,7 +413,7 @@ def is_cloneable(owner, name):
         # else:
         #     reason = '{0} is not clone-able for reasons unknown.'.format(uri)
 
-    return (is_cloneable, reason)
+    return (cloneable, reason)
 
 
 def get_files(path, language):
@@ -469,3 +450,54 @@ def get_files(path, language):
     files = [line for line in out.split('\n') if line.strip()]
 
     return files
+
+
+def rollback(repository_path, date):
+    command = (
+        'git log -1 --before="{0} 23:59:59" --pretty="format:%H"'.format(
+            date
+        )
+    )
+    if 'DEBUG' in os.environ:
+        print(command)
+
+    process = subprocess.Popen(
+        command, cwd=repository_path, shell=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    (out, err) = [i.decode() for i in process.communicate()]
+
+    if process.returncode != 0:
+        raise Exception('Failed to execute {0}'.format(command))
+
+    sha = out
+    command = 'git reset --hard {0}'.format(sha)
+    if 'DEBUG' in os.environ:
+        print(command)
+
+    process = subprocess.Popen(
+        command, cwd=repository_path, shell=True,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+    process.wait()
+    if process.returncode != 0:
+        raise Exception('Failed to execute {0}'.format(command))
+
+
+def earliest_commit_date(repository_path):
+    """
+    """
+    repo = Repo(repository_path)
+    git = repo.git
+    t0 = git.log('--reverse', format='%at').split('\n')[0]
+    return t0
+
+
+def unix_ts_to_yearmon(ts):
+    """
+    """
+    d = datetime.datetime.fromtimestamp(ts)
+    # return (d.year, d.month)
+    return '{0}-{1}-01'.format(d.year, d.month)
+
+

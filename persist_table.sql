@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS reaper_results (
     project_id                integer NOT NULL,
+    t                         integer NOT NULL,
     architecture              double precision DEFAULT NULL,
     community                 double precision DEFAULT NULL,
     continuous_integration    double precision DEFAULT NULL,
@@ -13,5 +14,5 @@ CREATE TABLE IF NOT EXISTS reaper_results (
     stars                     double precision DEFAULT NULL,
     unit_test                 double precision DEFAULT NULL,
     score                     double precision DEFAULT NULL,
-    PRIMARY KEY (project_id)
+    PRIMARY KEY (project_id, t)
 );
