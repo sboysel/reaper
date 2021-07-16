@@ -134,7 +134,7 @@ class AttributesTestCase(unittest.TestCase):
         self.assertTrue(attributes.is_persistence_enabled)
 
     def test_init_repository(self):
-        # TODO: FIX ME
+        # [x] passing
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -161,7 +161,7 @@ class AttributesTestCase(unittest.TestCase):
                 attributes.database.close()
 
     def test_cleanup(self):
-        # TODO: how slow is this?
+        # [x] passing
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -183,7 +183,7 @@ class AttributesTestCase(unittest.TestCase):
                 attributes.database.close()
 
     def test_run_timeout(self):
-        # TODO: how slow is this?
+        # [x] passing
         with tempfile.TemporaryDirectory() as directory:
             # Arrange
             project_id = 10868464
@@ -192,7 +192,7 @@ class AttributesTestCase(unittest.TestCase):
             for attribute in rawattributes:
                 if 'architecture' in attribute['name']:
                     attribute['options']['timeout'] = '1S'  # Sabotage
-            expected = (0, {'architecture': None})
+            expected = {'architecture': 0}
 
             # Act
             attributes = Attributes(
@@ -211,7 +211,7 @@ class AttributesTestCase(unittest.TestCase):
                 attributes.database.close()
 
     def test_score(self):
-        # TODO: how slow is this?
+        # [x] passing
         # Global Arrange
         attributes = Attributes(
             self.rawattributes, database=None, goptions=self.rawgoptions
